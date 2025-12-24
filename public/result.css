@@ -1,0 +1,42 @@
+/* Reset & base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Page background */
+body {
+  background-color: #EAE0CF;
+  color: #213448;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+/* Page heading */
+h2 {
+  font-size: 2rem;
+  color: #547792;
+  margin-bottom: 25px;
+  font-family: "Satisfy", cursive;
+}
+
+/* Output container */
+pre {
+  background-color: #94B4C1;
+  color: #213448;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(33, 52, 72, 0.2);
+  width: 100%;
+  max-width: 800px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-y: auto;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}

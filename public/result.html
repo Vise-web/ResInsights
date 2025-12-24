@@ -1,0 +1,53 @@
+<!--<!DOCTYPE html>
+<html>
+<head>
+  <title>Result</title>
+</head>
+<body>
+  <h2>Extracted Resume Text</h2>
+  <pre id="output"></pre>
+
+  <script>
+    fetch("output.txt")
+      .then(res => res.text())
+      .then(data => document.getElementById("output").innerText = data);
+  </script>
+</body>
+</html>
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Resume Review Result</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Satisfy&display=swap" rel="stylesheet">
+
+  <!-- Page CSS -->
+  <link rel="stylesheet" href="result.css"/>
+</head>
+
+<body>
+
+  <h2>Extracted Resume Text</h2>
+
+  <pre id="output">Loading resume content...</pre>
+
+  <script>
+    fetch("output.txt")
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("output").innerText = data;
+      })
+      .catch(() => {
+        document.getElementById("output").innerText =
+          "Unable to load resume text. Please try again.";
+      });
+  </script>
+
+</body>
+</html>

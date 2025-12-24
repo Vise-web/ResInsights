@@ -1,0 +1,98 @@
+/* Reset & base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Page background */
+body {
+  background-color: #EAE0CF;
+  color: #213448;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+/* Headings */
+h1 {
+  font-size: 2.5rem;
+  color: #213448;
+  margin-bottom: 10px;
+  font-family: "Lora", serif;
+}
+
+h2 {
+  font-size: 1.4rem;
+  color: #547792;
+  margin-bottom: 20px;
+  font-family: "Satisfy", cursive;
+}
+
+h3 {
+  font-size: 1.2rem;
+  color: #213448;
+  margin-bottom: 15px;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+/* Divider */
+hr {
+  width: 60%;
+  border: none;
+  height: 2px;
+  background-color: #94B4C1;
+  margin: 25px 0;
+}
+
+/* Form container */
+form {
+  background-color: #94B4C1;
+  padding: 25px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(33, 52, 72, 0.2);
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+/* File input */
+input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border: 2px dashed #547792;
+  border-radius: 8px;
+  background-color: #EAE0CF;
+  color: #213448;
+  cursor: pointer;
+}
+
+/* Button */
+button {
+  margin-top: 20px;
+  padding: 12px 20px;
+  width: 100%;
+  background-color: #213448;
+  color: #EAE0CF;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+/* Button hover */
+button:hover {
+  background-color: #547792;
+  transform: translateY(-2px);
+}
+
+/* Button active */
+button:active {
+  transform: translateY(0);
+}
