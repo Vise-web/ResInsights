@@ -35,15 +35,17 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({
   model: "gemini-2.5-flash",
 });
+/* ---------------- ROUTES ---------------- */
 
-/* ---------------- ROUTE ---------------- */
+// Optional GET route to prevent 404 when someone opens /upload in browser
+app.get("/upload", (req, res) => {
+  res.send("Use the homepage upload form.");
+});
+
+// POST route for actual file upload
 app.post("/upload", upload.single("resume"), async (req, res) => {
-  let filePath;
-
-  try {
-    if (!req.file) {
-      return res.status(400).send("No file uploaded");
-    }
+  // ... your existing upload logic
+});
 
     filePath = req.file.path;
 
@@ -60,7 +62,7 @@ app.post("/upload", upload.single("resume"), async (req, res) => {
 You are a professional resume reviewer and ATS expert.
 
 Analyze the resume and provide:
-
+keep it very clean and neat 
 1. Overall Score (out of 10)
 2. Strengths
 3. Weaknesses
@@ -105,3 +107,4 @@ ${pdf.text}
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
