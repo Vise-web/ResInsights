@@ -93,20 +93,23 @@ ${pdf.text}
     /* REDIRECT TO RESULT PAGE */
     res.redirect("/result.html");
   } 
-/*catch (err) {
-    console.error("❌ Error:", err);
+try {
+  // code that might fail
+} catch (err) {
+  console.error("❌ Error:", err);
 
-    if (filePath && fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
-
-    res.status(500).send("Resume processing failed");
+  if (filePath && fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
   }
-});*/
+
+  res.status(500).send("Resume processing failed");
+}
+
 
 /* ---------------- SERVER ---------------- */
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
 
 
