@@ -1,8 +1,9 @@
 import express from "express";
 import multer from "multer";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import pdfParse from "pdf-parse";
+import pdfParse from "pdf-parse/lib/pdf-parse.js";
 import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -10,7 +11,7 @@ dotenv.config();
 
 /* ---------------- BASIC SETUP ---------------- */
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,17 +19,16 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 
-console.log("🔥 NEW DEPLOYMENT — CLEAN VERSION RUNNING");
+/* ---------------- UPLOADS ---------------- */
+if (!fs.existsSync("uploads")) {
+  fs.mkdirSync("uploads");
+}
 
-/* ---------------- MULTER (MEMORY STORAGE) ---------------- */
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
-});
+const upload = multer({ dest: "uploads/" });
 
 /* ---------------- GEMINI SETUP ---------------- */
 if (!process.env.GEMINI_API_KEY) {
-  throw new Error("❌ GEMINI_API_KEY missing");
+  throw new Error("❌ GEMINI_API_KEY missing in .env");
 }
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -36,39 +36,31 @@ const model = genAI.getGenerativeModel({
   model: "gemini-2.5-flash",
 });
 
-/* ---------------- SAFETY: GET /upload ---------------- */
-app.get("/upload", (req, res) => {
-  res.redirect("/");
-});
-
-/* ---------------- MAIN ROUTE ---------------- */
+/* ---------------- ROUTE ---------------- */
 app.post("/upload", upload.single("resume"), async (req, res) => {
-  try {
-    console.log("📥 Resume upload received");
+  let filePath;
 
+  try {
     if (!req.file) {
       return res.status(400).send("No file uploaded");
     }
 
-    if (req.file.mimetype !== "application/pdf") {
-      return res.status(400).send("Only PDF files are allowed");
-    }
+    filePath = req.file.path;
 
     /* PDF → TEXT */
-    const pdfData = await pdfParse(req.file.buffer);
-    let resumeText = pdfData.text;
+    const buffer = fs.readFileSync(filePath);
+    const pdf = await pdfParse(buffer);
 
-    if (!resumeText || resumeText.trim().length < 50) {
-      return res.status(400).send("PDF has no readable text");
+    if (!pdf.text.trim()) {
+      throw new Error("Empty PDF");
     }
-
-    resumeText = resumeText.slice(0, 8000); // prevent timeout
 
     /* PROMPT */
     const prompt = `
 You are a professional resume reviewer and ATS expert.
 
 Analyze the resume and provide:
+
 1. Overall Score (out of 10)
 2. Strengths
 3. Weaknesses
@@ -78,7 +70,7 @@ Analyze the resume and provide:
 
 Resume:
 """
-${resumeText}
+${pdf.text}
 """
 `;
 
@@ -86,32 +78,30 @@ ${resumeText}
     const result = await model.generateContent(prompt);
     const output = result.response.text();
 
-    /* SEND RESULT (NO FILE STORAGE) */
-    res.send(`
-      <html>
-        <head>
-          <title>Resume Review</title>
-          <style>
-            body { font-family: Arial; padding: 20px; }
-            pre { white-space: pre-wrap; }
-            a { display: inline-block; margin-top: 20px; }
-          </style>
-        </head>
-        <body>
-          <h1>Resume Analysis</h1>
-          <pre>${output}</pre>
-          <a href="/">Upload another resume</a>
-        </body>
-      </html>
-    `);
-  } catch (error) {
-    console.error("❌ FULL ERROR:", error);
+    /* SAVE OUTPUT */
+    fs.writeFileSync(
+      path.join(__dirname, "public", "output.txt"),
+      output,
+      "utf-8"
+    );
+
+    /* CLEANUP */
+    fs.unlinkSync(filePath);
+
+    /* REDIRECT TO RESULT PAGE */
+    res.redirect("/result.html");
+  } catch (err) {
+    console.error("❌ Error:", err);
+
+    if (filePath && fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
     res.status(500).send("Resume processing failed");
   }
 });
 
 /* ---------------- SERVER ---------------- */
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
-
